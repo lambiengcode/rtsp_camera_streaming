@@ -1,0 +1,43 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        canvas {
+            display: block;
+            float: left;
+            transform: scale(1);
+            transform-origin: 0% 0% 0px;
+        }
+
+        .camera {
+            display: block;
+            margin-left: 10px;
+            padding: 0px;
+            width: 400px;
+        }
+    </style>
+    <title>RTSP STREAMING NODE JS IP CAMERA </title>
+    <h1>RTSP STREAMING NODE JS IP CAMERA </h1>
+    <div><canvas class="camera" id="videoCanvas" width="640" height="360"></canvas></div>
+
+    <script type="text/javascript" src="./jsmpeg.js"></script>
+    <script type="text/javascript">
+
+
+
+        var canvas = document.getElementById('videoCanvas');
+
+        var ws = new WebSocket("ws://localhost:9999")
+
+        var player = new jsmpeg(ws, { canvas: canvas, autoplay: true, audio: false, loop: true });
+
+    </script>
+
+<body>
+
+</body>
+
+</html>
