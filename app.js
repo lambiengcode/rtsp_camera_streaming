@@ -2,26 +2,71 @@ Stream = require('node-rtsp-stream')
 const onvif = require('node-onvif')
 const Recorder = require('node-rtsp-recorder').Recorder
 const express = require("express")
-const app = express();
+const app = express()
 const path = require('path')
+
+// Find all local network devices.
+
 
 stream = new Stream({
   name: 'name',
   streamUrl: 'rtsp://192.168.1.5:5554/front',
-  wsPort: 9999
-});
+  wsPort: 9001,
+  ffmpegOptions: { // options ffmpeg flags
+    '-stats': '', // an option with no neccessary value uses a blank string
+    '-r': 30 // options with required values specify the value after the key
+  },
+})
 
-var rec = new Recorder({
+// stream = new Stream({
+//   name: 'name',
+//   streamUrl: 'rtsp://admin:phamduong1986@192.168.0.100:554/cam/realmonitor?channel=2&subtype=0',
+//   wsPort: 9002,
+//   ffmpegOptions: { // options ffmpeg flags
+//     '-stats': '', // an option with no neccessary value uses a blank string
+//     '-r': 30 // options with required values specify the value after the key
+//   },
+// })
+
+//recoder video
+
+
+//recoder and sync to google drive
+// var rec = new Recorder({
+//   url: 'rtsp://192.168.1.5:5554/front',
+//   timeLimit: 86400, // time in seconds for each segmented video file - 86400s = a day
+//   folder: '/run/user/1000/gvfs/google-drive:host=gmail.com,user=lambiengcode/1TqmLimLgYD_D-Tt88YVTMJfUQviE1kU7', //custom your file path to store video
+//   name: 'cam1',
+//   directoryPathFormat: 'MMM-D-YYYY',
+//   fileNameFormat: 'M-D-Y-HH-mm-ss',
+// })
+
+// rec.startRecording()
+
+//link: 'rtsp://admin:phamduong1986@192.168.0.100:554/cam/realmonitor?channel=1&subtype=0'
+
+var rec1 = new Recorder({
   url: 'rtsp://192.168.1.5:5554/front',
   timeLimit: 86400, // time in seconds for each segmented video file - 86400s = a day
   folder: './Storage', //custom your file path to store video
   name: 'cam1',
   directoryPathFormat: 'MMM-D-YYYY',
-  fileNameFormat: 'M-D-h-mm-ss',
+  fileNameFormat: 'M-D-Y-HH-mm-ss',
 })
+// var rec2 = new Recorder({
+//   url: 'rtsp://admin:phamduong1986@192.168.0.100:554/cam/realmonitor?channel=2&subtype=0',
+//   timeLimit: 86400, // time in seconds for each segmented video file - 86400s = a day
+//   folder: './Storage', //custom your file path to store video
+//   name: 'cam2',
+//   directoryPathFormat: 'MMM-D-YYYY',
+//   fileNameFormat: 'M-D-Y-HH-mm-ss',
+// })
+rec1.startRecording()
+//rec2.startRecording()
 
-rec.startRecording();
 
+
+//scan ip camera
 process.camera = [];
 onvif.startProbe().then((device_info_list) => {
   console.log(device_info_list.length + ' devices were found.');
@@ -30,15 +75,8 @@ onvif.startProbe().then((device_info_list) => {
   const arr = [];
   device_info_list.forEach((info, x) => {
     if (x <= 5) {
-
-      //console.log('- ' + info.urn);
-      //console.log('  - ' + info.name);
-      //console.log('  - ' + info.xaddrs[0]);
       arr.push(info.xaddrs[0])
-
     }
-
-
   });
 
   //forEach to Build Each Camera
@@ -48,7 +86,7 @@ onvif.startProbe().then((device_info_list) => {
     let device = new onvif.OnvifDevice({
       xaddr: onCam,
       user: 'admin',
-      pass: 'admin'
+      pass: 'phamduong1986'
     });
 
     // Initialize the OnvifDevice object
@@ -64,9 +102,9 @@ onvif.startProbe().then((device_info_list) => {
 
       var rec = new Recorder({
         url: url,
-        timeLimit: 60, // time in seconds for each segmented video file
+        timeLimit: 86400, // time in seconds for each segmented video file
         folder: './Storage', //custom your file path to store video
-        name: 'cam1',
+        name: 'cam${i}',
         directoryPathFormat: 'MMM-D-YYYY',
         fileNameFormat: 'M-D-h-mm-ss',
       })
@@ -87,53 +125,20 @@ onvif.startProbe().then((device_info_list) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.get("/", (req, res) => {
   console.log(process.camera)
-  res.write(`<html lang="en">
-
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="ie=edge">
-      <style>
-          canvas {
-              display: block;
-              float: left;
-              transform: scale(1);
-              transform-origin: 0% 0% 0px;
-          }
-  
-          .camera {
-              display: block;
-              margin-left: 10px;
-              padding: 0px;
-              width: 400px;
-          }
-      </style>
-      <title>RTSP STREAMING NODE JS IP CAMERA </title>
-      
-      <div><canvas class="camera" id="videoCanvas" width="640" height="360"></canvas></div>
-  
-      <script type="text/javascript" src="jsmpeg.js"></script>
-      <script type="text/javascript">
-  
-  
-  
-          var canvas = document.getElementById('videoCanvas');
-  
-          var ws = new WebSocket("ws://192.168.1.5:5554/front")
-  
-          var player = new jsmpeg(ws, { canvas: canvas, autoplay: true, audio: false, loop: true });
-  
-      </script>
-      <h1>RTSP STREAMING NODE JS IP CAMERA </h1>
-  
+  res.write(`<html>
   <body>
-  
+      <canvas id="canvas"></canvas>
   </body>
   
+  <script type="text/javascript" src="./jsmpeg.min.js"></script>
+  <script type="text/javascript">
+      player = new JSMpeg.Player('ws://localhost:9002', {
+        canvas: document.getElementById('canvas') // Canvas should be a canvas DOM element
+      })	
+  </script>
   </html>`)
 
   res.end();
 })
 
-app.listen(3000)
-
+app.listen(3000) 

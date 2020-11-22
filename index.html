@@ -1,4 +1,4 @@
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -15,29 +15,24 @@
         .camera {
             display: block;
             margin-left: 10px;
+            margin-top: 10px;
             padding: 0px;
-            width: 400px;
+            width: 800px;
         }
     </style>
-    <title>RTSP STREAMING NODE JS IP CAMERA </title>
-    <h1>RTSP STREAMING NODE JS IP CAMERA </h1>
-    <div><canvas class="camera" id="videoCanvas" width="640" height="360"></canvas></div>
-
-    <script type="text/javascript" src="./jsmpeg.js"></script>
-    <script type="text/javascript">
-
-
-
-        var canvas = document.getElementById('videoCanvas');
-
-        var ws = new WebSocket("ws://localhost:9999")
-
-        var player = new jsmpeg(ws, { canvas: canvas, autoplay: true, audio: false, loop: true });
-
-    </script>
+</head>
 
 <body>
-
+    <div class="row">
+        <div><canvas class="camera" id="canvas1" width="50%" height="100%"></canvas></div>
+        
+    </div>
 </body>
 
-</html>
+<script type="text/javascript" src="./jsmpeg.min.js"></script>
+<script type="text/javascript">
+
+    player = new JSMpeg.Player('ws://localhost:9001', {
+        canvas: document.getElementById('canvas1') // Canvas should be a canvas DOM element
+    })
+</script>
