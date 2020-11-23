@@ -10,7 +10,7 @@ const path = require('path')
 
 stream = new Stream({
   name: 'name',
-  streamUrl: 'rtsp://192.168.1.5:5554/front',
+  streamUrl: 'rtsp://172.16.8.38:5554/back',
   wsPort: 9001,
   ffmpegOptions: { // options ffmpeg flags
     '-stats': '', // an option with no neccessary value uses a blank string
@@ -46,7 +46,7 @@ stream = new Stream({
 //link: 'rtsp://admin:phamduong1986@192.168.0.100:554/cam/realmonitor?channel=1&subtype=0'
 
 var rec1 = new Recorder({
-  url: 'rtsp://192.168.1.5:5554/front',
+  url: 'rtsp://172.16.8.38:5554/front',
   timeLimit: 86400, // time in seconds for each segmented video file - 86400s = a day
   folder: './Storage', //custom your file path to store video
   name: 'cam1',
@@ -117,8 +117,6 @@ onvif.startProbe().then((device_info_list) => {
     });
 
   })
-
-
 }).catch((error) => {
   console.error(error);
 });
