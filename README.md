@@ -1,4 +1,5 @@
-# rtsp_streaming_camera
-nodejs for streaming local camera, recording and sync to Google Drive
+## Streaming camera :camera: :camera: :eyes:
 
-==> run 'docker-compose up' on your command.
+- :rocket: App using Nodejs for streaming local camera, recording and sync to Google Drive
+
+- :computer: Run 'docker-compose up' on your command.
